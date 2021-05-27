@@ -1,5 +1,6 @@
 ﻿using Basket.API.Entity;
 using Basket.API.Repositories;
+using Basket.API.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,12 +15,12 @@ namespace Basket.API.Controllers
     [Route("api/Basket")]
     public class BasketController : ControllerBase
     {
-        private readonly IBasketRepository _basketRepository;
+        private readonly IBasketService _basketService;
         private readonly ILogger<BasketController> _logger;
 
-        public BasketController(IBasketRepository basketRepository,ILogger<BasketController> logger)
+        public BasketController(IBasketService basketService, ILogger<BasketController> logger)
         {
-            _basketRepository = basketRepository;
+            _basketService = basketService;
             _logger = logger;
         }
 
@@ -27,21 +28,21 @@ namespace Basket.API.Controllers
         [ProducesResponseType(typeof(ShoppingCart),(int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetBasket(string username)
         {
-            return Ok((await _basketRepository.GetBasketAsync(username) ?? new ShoppingCart(username)));
+            return Ok((await _basketService.GetBasketAsync(username) ?? new ShoppingCart(username)));
         }
         [HttpDelete("{username}", Name = "DeleteBasket")]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteBasket(string username)
         {
-            await _basketRepository.DeketeBasketAsync(username);
-            return Ok();
+            await _basketService.DeleteBasketAsync(username);
+            return NoContent();
         }
 
         [HttpPost(Name = "UpdateBasket")]
         [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> UpdateBasket(ShoppingCart model)
         {
-            return Ok(await _basketRepository.UpdateBasketAsync(model));
+            return Ok(await _basketService.UpdateBasketAsync(model));
         }
 
     }
