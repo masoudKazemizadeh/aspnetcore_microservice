@@ -31,17 +31,17 @@ namespace Discount.API.Extensions
                     using var command = new NpgsqlCommand { Connection = connection };
                     command.Parameters.Add("@cnt", NpgsqlTypes.NpgsqlDbType.Integer);
                     command.Parameters["@cnt"].Direction = System.Data.ParameterDirection.Output;
-                    command.CommandText = "IF EXISTS (SELECT oid FROM pg_database WHERE datname = 'DiscountDb') BEGIN SET @cnt=1 END ELSE BEGIN SET @cnt=0 END";
-                     command.ExecuteScalar();
-                    var result = (int)command.Parameters["@cnt"].Value;
-                    if (result ==1)
-                        return host;
-                    command.CommandText = @"CREATE TABLE Coupon(Id SERIAL PRIMARY KEY NOT NULL, ProductName varchar(24) NOT NULL, Description TEXT,Amount INT)";
+                    command.CommandText = "SELECT 'CREATE DATABASE DiscountDb' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'DiscountDb')";
+                    command.ExecuteScalar();
+
+                    command.CommandText = @"CREATE TABLE IF NOT EXISTS Coupon(Id SERIAL PRIMARY KEY NOT NULL, ProductName varchar(24) NOT NULL, Description TEXT,Amount INT)";
                     command.ExecuteNonQuery();
 
-                    command.CommandText = "INSERT INTO Coupon (ProductName,Description,Amount) VALUES('IPhone X','IPhone Discount',150)";
+                    //command.CommandText = "INSERT INTO Coupon (ProductName,Description,Amount) VALUES('IPhone X','IPhone Discount',150)";
+                    command.CommandText = "INSERT INTO Coupon (ProductName,Description,Amount) SELECT 'IPhone X','IPhone Discount',150 WHERE NOT EXISTS (SELECT 1 FROM Coupon WHERE id=1)";
                     command.ExecuteNonQuery();
-                    command.CommandText = "INSERT INTO Coupon (ProductName,Description,Amount) VALUES('Sumsung 10','Sumsung Discount',80)";
+                    //command.CommandText = "INSERT INTO Coupon (ProductName,Description,Amount) VALUES('Sumsung 10','Sumsung Discount',80)";
+                    command.CommandText = "INSERT INTO Coupon (ProductName,Description,Amount) SELECT 'Sumsung 10','Sumsung Discount',80 WHERE NOT EXISTS (SELECT 1 FROM Coupon WHERE id=1)";
                     command.ExecuteNonQuery();
 
                     logger.LogInformation("database migration is finished successfully");
