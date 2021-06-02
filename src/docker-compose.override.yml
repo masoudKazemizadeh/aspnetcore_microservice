@@ -31,13 +31,18 @@ services:
   orderdb:
     container_name: orderdb
     environment:
-      - SA_PASSWORD=admin1234
+      - SA_PASSWORD=Admin1234
       - ACCEPT_EULA=Y
     restart: always
     ports:
       - "1433:1433"
       
-
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
   pgadmin:
     container_name: pgadmin
@@ -103,4 +108,16 @@ services:
       - discountdb
     ports:
       - "8003:80"
+
+
+  ordering.api:
+    container_name: order.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=admin;Password=Admin1234;Trusted_Connection=true;"
+    depends_on: 
+      - orderdb  
+    ports:
+      - "8004:80"
+    
 

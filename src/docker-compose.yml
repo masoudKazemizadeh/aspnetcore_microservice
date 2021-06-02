@@ -7,15 +7,18 @@ services:
   basketdb:
     image: redis
 
-  portainer:
-    image: portainer/portainer-ce
-
   discountdb:
     image: postgres
 
   orderdb:
     image: mcr.microsoft.com/mssql/server:2017-latest
-    
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  portainer:
+    image: portainer/portainer-ce
+   
   pgadmin:
     image: dpage/pgadmin4
 
@@ -43,10 +46,17 @@ services:
       context: .
       dockerfile: services/discount/Discount.Grpc/Dockerfile
 
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: .
+      dockerfile: services/ordering/Ordering.API/Dockerfile
+
 volumes:
   mongo_data:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
