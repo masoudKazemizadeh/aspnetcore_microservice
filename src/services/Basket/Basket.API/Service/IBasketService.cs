@@ -11,5 +11,6 @@ namespace Basket.API.Service
         Task<ShoppingCart> GetBasketAsync(string username);
         Task<ShoppingCart> UpdateBasketAsync(ShoppingCart dto);
         Task DeleteBasketAsync(string userName);
+        Task<bool> CheckoutAsync(BasketCheckout dto);
     }
 }

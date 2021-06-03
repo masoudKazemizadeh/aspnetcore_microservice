@@ -17,6 +17,7 @@ namespace Basket.API.Controllers
     {
         private readonly IBasketService _basketService;
         private readonly ILogger<BasketController> _logger;
+        
 
         public BasketController(IBasketService basketService, ILogger<BasketController> logger)
         {
@@ -38,11 +39,21 @@ namespace Basket.API.Controllers
             return NoContent();
         }
 
-        [HttpPost(Name = "UpdateBasket")]
+        [HttpPut(Name = "UpdateBasket")]
         [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> UpdateBasket(ShoppingCart model)
         {
             return Ok(await _basketService.UpdateBasketAsync(model));
+        }
+
+        [HttpPost("checkout",Name = "Checkout")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CheckoutBasket(BasketCheckout dto)
+        {
+            var result = await _basketService.CheckoutAsync(dto);
+            return result ? Accepted() : BadRequest();
+
         }
 
     }
