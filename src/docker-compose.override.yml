@@ -125,3 +125,31 @@ services:
       - "8004:80"
     
 
+
+  ocelotapigw:
+    container_name: ocelot.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - catalog.api
+      - ordering.api
+      - basket.api
+      - discount.api
+    ports:
+      - "8010:80"
+
+
+  shopping.aggregator:
+    container_name: shopping.aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ApiSettings:CatalogApiUrl=http://catalog.api"
+      - "ApiSettings:BasketApiUrl=http://basket.api"
+      - "ApiSettings:OrderApiUrl=http://ordering.api"
+    depends_on:
+      - catalog.api
+      - ordering.api
+      - basket.api
+    ports:
+      - "8005:80"
+
