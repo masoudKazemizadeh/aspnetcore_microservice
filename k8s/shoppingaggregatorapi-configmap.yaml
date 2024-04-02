@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shoppingaggregatorapi-configmap
+data:
+  catalogapi-url: http://catalogapi-service:8000"
+  basketapi-url: http://basketapi-service:8001"
+  orderapi-url: http://orderingapi-service:8004"

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqldb-deployment
+  labels:
+    app: sqldb
+spec:
+  selector:
+    matchLabels:
+      app: sqldb
+  template:
+    metadata:
+      labels:
+        app: sqldb
+    spec:
+      containers:
+      - name: sqldb-container
+        image: mcr.microsoft.com/mssql/server:2017-latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "64Mi"
+            cpu: "0.25"          
+        ports:
+        - containerPort: 1433
+        env:
+        - name: SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sqldb-secret
+              key: sa-password
+        - name: ACCEPT_EULA
+          value: 'Y'
+
+      #   volumeMounts:
+      #     - mountPath: /app/userData
+      #       name: userData-volume 
+      # volumes:
+      #   - name: userData-volume
+      #     emptyDir: {}       
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sqldb-service
+spec:
+  selector:
+    app: sqldb
+  ports:
+  - protocol: TCP
+    port: 1433
+    targetPort: 1433

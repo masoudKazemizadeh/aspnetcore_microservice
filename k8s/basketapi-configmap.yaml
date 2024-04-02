@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: basketapi-configmap
+data:
+  connection-string: redisdb-service:6379
+  discount-grpc-url: discountgrpc-service
+  broker-host-address: amqp://guest:guest@rabitmq-service:5672

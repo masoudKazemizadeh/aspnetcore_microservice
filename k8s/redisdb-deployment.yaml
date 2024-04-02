@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redisdb-deployment
+  labels:
+    app: redisdb
+spec:
+  selector:
+    matchLabels:
+      app: redisdb
+  template:
+    metadata:
+      labels:
+        app: redisdb
+    spec:
+      containers:
+      - name: redisdb-container
+        image: redis
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "64Mi"
+            cpu: "0.25"          
+        ports:
+        - containerPort: 6739
+      #   volumeMounts:
+      #     - mountPath: /app/userData
+      #       name: userData-volume 
+      # volumes:
+      #   - name: userData-volume
+      #     emptyDir: {}       
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redisdb-service
+spec:
+  selector:
+    app: redisdb
+  ports:
+  - protocol: TCP
+    port: 6037
+    targetPort: 6037

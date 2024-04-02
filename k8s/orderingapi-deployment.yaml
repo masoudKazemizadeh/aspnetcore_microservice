@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderingapi-deployment
+spec:
+  selector:
+    matchLabels:
+      app: orderingapi
+  template:
+    metadata:
+      labels:
+        app: orderingapi
+    spec:
+      containers:
+      - name: orderingapi-container
+        image: acrfortest001.azurecr.io/orderingapi:v1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "300m"
+          limits:
+            memory: "64Mi"
+            cpu: "0.3"
+        ports:
+        - containerPort: 80
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: EventBusSettings__HostAddress
+            valueFrom:
+              configMapKeyRef:
+                name: orderingapi-configmap
+                key: broker-host-address 
+          - name: ConnectionStrings__OrderingConnectionString
+            valueFrom:
+              configMapKeyRef:
+                name: orderingapi-configmap
+                key: connection-string
+      imagePullSecrets:
+        - name: acr-secret          
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderingapi-service
+spec:
+  selector:
+    app: orderingapi
+  ports:
+  - port: 8004
+    protocol: TCP
+    targetPort: 80
+
+

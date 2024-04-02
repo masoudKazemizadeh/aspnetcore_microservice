@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabitmq-deployment
+  labels:
+    app: rabitmq
+spec:
+  selector:
+    matchLabels:
+      app: rabitmq
+  template:
+    metadata:
+      labels:
+        app: rabitmq
+    spec:
+      containers:
+      - name: rabitmq-container
+        image: rabbitmq:3-management-alpine
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "64Mi"
+            cpu: "0.25"          
+        ports:
+        # - name: port5672
+        - containerPort: 5672
+        # - name: port15672
+        #   containerPort: 15672  
+      #   volumeMounts:
+      #     - mountPath: /app/userData
+      #       name: userData-volume 
+      # volumes:
+      #   - name: userData-volume
+      #     emptyDir: {}       
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabitmq-service
+spec:
+  selector:
+    app: rabitmq
+  ports:
+  # - name: port5672
+  - protocol: TCP
+    port: 5672
+    targetPort: 5672
+  # - name: port15672
+  #   protocol: TCP
+  #   port: 15672
+  #   targetPort: 15672  
