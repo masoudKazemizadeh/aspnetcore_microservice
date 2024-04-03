@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-deployment
+  labels:
+    app: mongodb
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb-container
+        image: mongo
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "200m"
+          limits:
+            memory: "128Mi"
+            cpu: "0.2"
+        ports:
+        - containerPort: 6739
+      #   volumeMounts:
+      #     - mountPath: /app/userData  #it is the location in our container to store data
+      #       name: userData-volume  # name of volume
+      # volumes:
+      #   - name: userData-volume #name of volume
+      #     emptyDir: {}  # defualt type of a volume in k8s. it's a storage in pod so if this pod shuts down the data is lost and other pods will not have it
+      #     hostPath: # this type put the storage on node (host machine) instead of pod so when a pod shuts down the data is availabe in node storage for other pods. but if some pods are runing on the another node then they won't have this data
+      #       path: /data  # folder on our host machine (node) where we save data
+      #       type: DirectoryOrCreate # if the above folder does not exist then create it otherwise use it
+      #     there is a third type which is Persistent volumes (PVC) which needs a separate volume deplyment. this type is node and pod independent. data is stored in k8s and all nodes and pods have acces to it to read and write
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - protocol: TCP
+    port: 27017

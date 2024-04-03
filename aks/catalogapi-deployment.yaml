@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogapi-deployment
+spec:
+  selector:
+    matchLabels:
+      app: catalogapi
+  template:
+    metadata:
+      labels:
+        app: catalogapi
+    spec:
+      containers:
+      - name: catalogapi-container
+        image: acrfortest001.azurecr.io/catalogapi:v1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "200m"
+          limits:
+            memory: "64Mi"
+            cpu: "0.2"
+        ports:
+        - containerPort: 80
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: DatabaseSettings__ConnectionString
+            valueFrom:
+              configMapKeyRef:
+                name: catalogapi-configmap
+                key: connection-string
+      imagePullSecrets:
+        - name: acr-secret          
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogapi-service
+spec:
+  selector:
+    app: catalogapi
+  ports:
+  - port: 80
+    protocol: TCP
+
+

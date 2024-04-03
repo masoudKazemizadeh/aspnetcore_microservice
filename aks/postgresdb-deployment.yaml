@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresdb-deployment
+  labels:
+    app: postgresdb
+spec:
+  selector:
+    matchLabels:
+      app: postgresdb
+  template:
+    metadata:
+      labels:
+        app: postgresdb
+    spec:
+      containers:
+      - name: postgresdb-container
+        image: postgres
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "200m"
+          limits:
+            memory: "64Mi"
+            cpu: "0.20"
+        ports:
+        - containerPort: 5432
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgresdb-secret
+                key: postgres-user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgresdb-secret
+                key: postgres-password
+          - name: POSTGRES_DB
+            value: DiscountDb
+      #   volumeMounts:
+      #     - mountPath: /app/userData  #it is the location in our container to store data
+      #       name: userData-volume  # name of volume
+      # volumes:
+      #   - name: userData-volume #name of volume
+      #     emptyDir: {}  # defualt type of a volume in k8s. it's a storage in pod so if this pod shuts down the data is lost and other pods will not have it
+      #     hostPath: # this type put the storage on node (host machine) instead of pod so when a pod shuts down the data is availabe in node storage for other pods. but if some pods are runing on the another node then the won't have this data
+      #       path: /data  # folder on our host machine where we save data
+      #       type: DirectoryOrCreate # say if the above folder does not exist then create it otherwise use it
+      #     there is a third type which is Persistent volumes (PVC) which needs a separate volume deplyment. this type is node and pod independent so stroes data in k8s and all nodes and pods have acces to it to read and write
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresdb-service
+spec:
+  selector:
+    app: postgresdb
+  ports:
+  - protocol: TCP
+    port: 5432

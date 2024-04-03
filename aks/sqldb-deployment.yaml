@@ -20,10 +20,10 @@ spec:
         resources:
           requests:
             memory: "64Mi"
-            cpu: "250m"
+            cpu: "200m"
           limits:
             memory: "64Mi"
-            cpu: "0.25"          
+            cpu: "0.2"          
         ports:
         - containerPort: 1433
         env:
@@ -54,4 +54,3 @@ spec:
   ports:
   - protocol: TCP
     port: 1433
-    targetPort: 1433

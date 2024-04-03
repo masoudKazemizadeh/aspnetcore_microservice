@@ -20,10 +20,10 @@ spec:
         resources:
           requests:
             memory: "128Mi"
-            cpu: "250m"
+            cpu: "200m"
           limits:
             memory: "128Mi"
-            cpu: "0.25"          
+            cpu: "0.20"          
         ports:
         # - name: port5672
         - containerPort: 5672
@@ -49,7 +49,6 @@ spec:
   # - name: port5672
   - protocol: TCP
     port: 5672
-    targetPort: 5672
   # - name: port15672
   #   protocol: TCP
   #   port: 15672
